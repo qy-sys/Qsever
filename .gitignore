@@ -1,0 +1,35 @@
+# 敏感配置
+.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+venv/
+
+# PyInstaller
+dist/
+build/
+Qsever_Setup.spec
+installer_filled.py
+
+# 用户数据
+data/*.jsonl
+output/*.html
+images/*
+!images/.gitkeep
+!data/.gitkeep
+!output/.gitkeep
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
