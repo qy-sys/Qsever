@@ -115,7 +115,18 @@ class Settings:
             )
 
         if not profiles:
-            raise ConfigError("配置文件中没有找到任何配置节")
+            raise ConfigError(
+                "配置文件中没有找到任何配置节\n"
+                "请编辑 config.ini，添加你的 API 配置\n"
+                "示例：\n"
+                "  [我的API]\n"
+                "  api_key = 你的密钥\n"
+                "  base_url = 你的API地址\n"
+                "  model = 模型名称\n"
+                "\n"
+                "  [main]\n"
+                "  profile = 我的API"
+            )
 
         if active and active not in profiles:
             raise ConfigError(f"main.profile = {active} 指向的配置不存在\n可用配置：{', '.join(profiles.keys())}")
