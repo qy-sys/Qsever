@@ -12,7 +12,6 @@ a = Analysis(
         'qsever.cli',
         'qsever.client',
         'qsever.config',
-        'qsever.models',
         'qsever.conversation',
         'qsever.image_handler',
         'qsever.usage',
