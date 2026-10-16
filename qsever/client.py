@@ -6,7 +6,6 @@ from rich.console import Console
 
 from .config import Settings
 from .exceptions import APIError
-from .models import ModelRegistry
 
 console = Console()
 
@@ -25,8 +24,7 @@ class APIClient:
         model: str,
         stream: bool = True,
     ) -> Iterator[str]:
-        model_info = ModelRegistry.get(model)
-        max_retries = 3 if model_info and model_info.is_free else 1
+        max_retries = 3
 
         for attempt in range(max_retries):
             try:

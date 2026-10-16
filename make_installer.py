@@ -11,9 +11,9 @@ def main():
         print("请先运行: pyinstaller build.spec --clean --noconfirm")
         return
 
-    env_file = PROJECT_DIR / '.env'
+    env_file = PROJECT_DIR / '.env.example'
     if not env_file.exists():
-        print(f"错误: 找不到 .env 文件: {env_file}")
+        print(f"错误: 找不到 .env.example 文件: {env_file}")
         return
 
     installer_template = PROJECT_DIR / 'installer.py'

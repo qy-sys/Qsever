@@ -48,7 +48,7 @@ class CLI:
 
     def run(self):
         console.print(Panel.fit(
-            "[bold cyan]Qsever - 高中解题助手 v0.2.0[/bold cyan]",
+            "[bold cyan]Qsever - 高中解题助手 v0.1.0[/bold cyan]",
             border_style="cyan",
         ))
         self._show_current_model()
