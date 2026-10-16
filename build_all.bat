@@ -1,59 +1,59 @@
 @echo off
 chcp 65001 >nul
 echo ============================================
-echo   Qsever æ‰“åŒ…æ„å»ºè„šæœ¬
+echo   Qsever ´ò°ü¹¹½¨½Å±¾
 echo ============================================
 echo.
 
 cd /d "%~dp0"
 
-echo [1/4] æ£€æŸ¥ PyInstaller...
+echo [1/4] ¼ì²é PyInstaller...
 pip show pyinstaller >nul 2>&1
 if errorlevel 1 (
-    echo å®‰è£… PyInstaller...
+    echo °²×° PyInstaller...
     pip install pyinstaller
 )
-echo å®Œæˆ
+echo Íê³É
 echo.
 
-echo [2/4] æ‰“åŒ…ä¸»ç¨‹åº (PyInstaller onefile)...
+echo [2/4] ´ò°üÖ÷³ÌĞò (PyInstaller onefile)...
 pyinstaller build.spec --clean --noconfirm
 if errorlevel 1 (
-    echo ä¸»ç¨‹åºæ‰“åŒ…å¤±è´¥ï¼
+    echo Ö÷³ÌĞò´ò°üÊ§°Ü£¡
     pause
     exit /b 1
 )
-echo å®Œæˆ
+echo Íê³É
 echo.
 
-echo [3/4] ç”Ÿæˆå®‰è£…ç¨‹åºæºç ...
+echo [3/4] Éú³É°²×°³ÌĞòÔ´Âë...
 python make_installer.py
 if errorlevel 1 (
-    echo å®‰è£…ç¨‹åºç”Ÿæˆå¤±è´¥ï¼
+    echo °²×°³ÌĞòÉú³ÉÊ§°Ü£¡
     pause
     exit /b 1
 )
-echo å®Œæˆ
+echo Íê³É
 echo.
 
-echo [4/4] æ‰“åŒ…å®‰è£…ç¨‹åº (PyInstaller onefile)...
+echo [4/4] ´ò°ü°²×°³ÌĞò (PyInstaller onefile)...
 pyinstaller --onefile --name Qsever_Setup --console --noconfirm dist/installer_filled.py
 if errorlevel 1 (
-    echo å®‰è£…ç¨‹åºæ‰“åŒ…å¤±è´¥ï¼
+    echo °²×°³ÌĞò´ò°üÊ§°Ü£¡
     pause
     exit /b 1
 )
-echo å®Œæˆ
+echo Íê³É
 echo.
 
 echo ============================================
-echo   æ„å»ºå®Œæˆï¼
+echo   ¹¹½¨Íê³É£¡
 echo ============================================
 echo.
 
-for %%F in (dist\Qsever_Setup.exe) do echo å®‰è£…ç¨‹åº: %%F (%%~zF bytes)
-for %%F in (dist\Qsever.exe) do echo ä¸»ç¨‹åº:   %%F (%%~zF bytes)
+for %%F in (dist\Qsever_Setup.exe) do echo °²×°³ÌĞò: %%F (%%~zF bytes)
+for %%F in (dist\Qsever.exe) do echo Ö÷³ÌĞò:   %%F (%%~zF bytes)
 echo.
-echo è¿è¡Œ dist\Qsever_Setup.exe å³å¯å®‰è£…åˆ°æ¡Œé¢
+echo ÔËĞĞ dist\Qsever_Setup.exe ¼´¿É°²×°µ½×ÀÃæ
 echo.
 pause
