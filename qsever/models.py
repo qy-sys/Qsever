@@ -8,9 +8,7 @@ class ModelInfo:
     display_name: str
     input_price: float = 0
     output_price: float = 0
-    is_free: bool = False
     supports_vision: bool = True
-    speed_tier: int = 2
     notes: str = ""
 
 
@@ -21,16 +19,21 @@ class ModelRegistry:
     _model_map: dict[str, ModelInfo] = {}
 
     @classmethod
-    def load_from_config(cls, model_ids: list[str], default_model: str = ""):
+    def load_from_config(cls, model_entries: list[tuple[str, float, float]]):
         cls._models = []
         cls._model_map = {}
-        for mid in model_ids:
-            mid = mid.strip()
-            if not mid:
+        for model_id, input_price, output_price in model_entries:
+            model_id = model_id.strip()
+            if not model_id:
                 continue
-            info = ModelInfo(id=mid, display_name=mid)
+            info = ModelInfo(
+                id=model_id,
+                display_name=model_id,
+                input_price=input_price,
+                output_price=output_price,
+            )
             cls._models.append(info)
-            cls._model_map[mid] = info
+            cls._model_map[model_id] = info
 
     @classmethod
     def get(cls, model_id: str) -> Optional[ModelInfo]:
@@ -41,23 +44,19 @@ class ModelRegistry:
         return cls._models[0] if cls._models else None
 
     @classmethod
-    def get_fastest(cls) -> Optional[ModelInfo]:
-        return cls._models[0] if cls._models else None
-
-    @classmethod
-    def get_free(cls) -> Optional[ModelInfo]:
-        free = [m for m in cls._models if m.is_free]
-        return free[0] if free else (cls._models[0] if cls._models else None)
-
-    @classmethod
     def list_all(cls) -> list[ModelInfo]:
         return cls._models
 
     @classmethod
-    def add(cls, model_id: str) -> ModelInfo:
+    def add(cls, model_id: str, input_price: float = 0, output_price: float = 0) -> ModelInfo:
         if model_id in cls._model_map:
             return cls._model_map[model_id]
-        info = ModelInfo(id=model_id, display_name=model_id)
+        info = ModelInfo(
+            id=model_id,
+            display_name=model_id,
+            input_price=input_price,
+            output_price=output_price,
+        )
         cls._models.append(info)
         cls._model_map[model_id] = info
         return info

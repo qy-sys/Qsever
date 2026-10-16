@@ -18,26 +18,21 @@ def main():
     data_dir_override = Path(args.data_dir) if args.data_dir else None
 
     try:
-        settings = Settings.from_env(data_dir_override=data_dir_override)
+        settings = Settings.from_config(data_dir_override=data_dir_override)
     except ConfigError as e:
         print(f"错误: {e}", file=sys.stderr)
-        print("\n请在 .env 文件中配置：")
-        print("  QSEVER_API_KEY=你的API密钥")
-        print("  QSEVER_BASE_URL=你的API地址")
-        print("  QSEVER_MODELS=模型1,模型2")
+        print("\n请从 config.example.ini 复制为 config.ini 并填写你的 API 信息", file=sys.stderr)
         sys.exit(1)
 
-    ModelRegistry.load_from_config(settings.models, settings.default_model)
+    profile = settings.profiles[settings.active_profile]
+    ModelRegistry.load_from_config(profile.models)
+
+    cli = CLI(settings)
 
     if args.model:
         if not ModelRegistry.get(args.model):
             ModelRegistry.add(args.model)
-        settings.default_model = args.model
-
-    if not settings.default_model and ModelRegistry.list_all():
-        settings.default_model = ModelRegistry.list_all()[0].id
-
-    cli = CLI(settings)
+        cli.current_model = args.model
 
     if args.clear:
         cli.conversation.clear()

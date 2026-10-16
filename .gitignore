@@ -1,5 +1,6 @@
 # 敏感配置
 .env
+config.ini
 
 # Python
 __pycache__/

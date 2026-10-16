@@ -7,7 +7,7 @@ from pathlib import Path
 
 # === 构建时自动填充 ===
 MAIN_EXE_B64 = "__MAIN_EXE_B64__"
-ENV_CONTENT = """__ENV_CONTENT__"""
+CONFIG_CONTENT = """__CONFIG_CONTENT__"""
 # =======================
 
 def get_desktop() -> Path:
@@ -39,15 +39,16 @@ def main():
     print()
 
     print("[3/4] 释放配置文件...")
-    env_path = target / '.env'
-    with open(env_path, 'w', encoding='utf-8') as f:
-        f.write(ENV_CONTENT)
-    print("      .env")
+    config_path = target / 'config.ini'
+    with open(config_path, 'w', encoding='utf-8') as f:
+        f.write(CONFIG_CONTENT)
+    print("      config.ini")
     print()
 
     print("[4/4] 启动 Qsever...")
     print()
     print("安装完成！文件位置:", target)
+    print("请编辑 config.ini 填写你的 API 信息")
     print("下次可直接双击运行:", exe_path)
     print()
 

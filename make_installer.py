@@ -11,9 +11,9 @@ def main():
         print("请先运行: pyinstaller build.spec --clean --noconfirm")
         return
 
-    env_file = PROJECT_DIR / '.env.example'
-    if not env_file.exists():
-        print(f"错误: 找不到 .env.example 文件: {env_file}")
+    config_file = PROJECT_DIR / 'config.example.ini'
+    if not config_file.exists():
+        print(f"错误: 找不到 config.example.ini 文件: {config_file}")
         return
 
     installer_template = PROJECT_DIR / 'installer.py'
@@ -26,13 +26,13 @@ def main():
     exe_b64 = base64.b64encode(exe_data).decode('ascii')
     print(f"  大小: {len(exe_data) / 1024 / 1024:.1f} MB -> base64: {len(exe_b64) / 1024 / 1024:.1f} MB")
 
-    print("读取 .env...")
-    env_content = env_file.read_text(encoding='utf-8')
+    print("读取 config.example.ini...")
+    config_content = config_file.read_text(encoding='utf-8')
 
     print("生成安装程序源码...")
     template = installer_template.read_text(encoding='utf-8')
     filled = template.replace('__MAIN_EXE_B64__', exe_b64)
-    filled = filled.replace('__ENV_CONTENT__', env_content)
+    filled = filled.replace('__CONFIG_CONTENT__', config_content)
 
     output = DIST_DIR / 'installer_filled.py'
     DIST_DIR.mkdir(exist_ok=True)
