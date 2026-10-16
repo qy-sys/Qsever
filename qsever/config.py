@@ -1,5 +1,5 @@
 import configparser
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 import sys
 
@@ -29,18 +29,30 @@ class ConfigProfile:
     name: str
     api_key: str
     base_url: str
-    models: list[tuple[str, float, float]] = field(default_factory=list)
+    model_id: str = ""
+    input_price: float = 0.0
+    output_price: float = 0.0
 
 
 @dataclass
 class Settings:
-    profiles: dict[str, ConfigProfile] = field(default_factory=dict)
+    profiles: dict[str, ConfigProfile] = None
     active_profile: str = ""
-    images_dir: Path = field(default_factory=lambda: Path("images"))
-    data_dir: Path = field(default_factory=lambda: Path("data"))
+    images_dir: Path = None
+    data_dir: Path = None
     budget_limit: float = 100.0
     auto_open_html: bool = True
-    output_dir: Path = field(default_factory=lambda: Path("output"))
+    output_dir: Path = None
+
+    def __post_init__(self):
+        if self.profiles is None:
+            self.profiles = {}
+        if self.images_dir is None:
+            self.images_dir = Path("images")
+        if self.data_dir is None:
+            self.data_dir = Path("data")
+        if self.output_dir is None:
+            self.output_dir = Path("output")
 
     @property
     def api_key(self) -> str:
@@ -55,15 +67,22 @@ class Settings:
         return ""
 
     @property
-    def models(self) -> list[tuple[str, float, float]]:
+    def current_model(self) -> str:
         if self.active_profile in self.profiles:
-            return self.profiles[self.active_profile].models
-        return []
+            return self.profiles[self.active_profile].model_id
+        return ""
 
     @property
-    def default_model(self) -> str:
-        models = self.models
-        return models[0][0] if models else ""
+    def input_price(self) -> float:
+        if self.active_profile in self.profiles:
+            return self.profiles[self.active_profile].input_price
+        return 0.0
+
+    @property
+    def output_price(self) -> float:
+        if self.active_profile in self.profiles:
+            return self.profiles[self.active_profile].output_price
+        return 0.0
 
     @classmethod
     def from_config(cls, config_file: str = "config.ini", data_dir_override: Path | None = None) -> "Settings":
@@ -84,20 +103,22 @@ class Settings:
                 continue
             api_key = cp.get(section, 'api_key', fallback='')
             base_url = cp.get(section, 'base_url', fallback='')
-            models_str = cp.get(section, 'models', fallback='')
-            models = [parse_model_entry(m) for m in models_str.split(',') if m.strip()]
+            model_str = cp.get(section, 'model', fallback='')
+            model_id, input_price, output_price = parse_model_entry(model_str)
             profiles[section] = ConfigProfile(
                 name=section,
                 api_key=api_key,
                 base_url=base_url,
-                models=models,
+                model_id=model_id,
+                input_price=input_price,
+                output_price=output_price,
             )
 
         if not profiles:
             raise ConfigError("配置文件中没有找到任何配置节")
 
         if active and active not in profiles:
-            raise ConfigError(f"main.profile = {active} 指向的配置不存在\n可用配置: {', '.join(profiles.keys())}")
+            raise ConfigError(f"main.profile = {active} 指向的配置不存在\n可用配置：{', '.join(profiles.keys())}")
 
         if not active:
             active = next(iter(profiles))

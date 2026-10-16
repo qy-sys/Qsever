@@ -3,8 +3,6 @@ from dataclasses import dataclass, asdict
 from datetime import datetime
 from pathlib import Path
 
-from .models import ModelRegistry
-
 
 @dataclass
 class RequestLog:
@@ -36,13 +34,8 @@ class UsageTracker:
                         except json.JSONDecodeError:
                             pass
 
-    def record(self, model: str, prompt_tokens: int, completion_tokens: int):
-        model_info = ModelRegistry.get(model)
-        if model_info:
-            cost = (prompt_tokens / 1_000_000) * model_info.input_price + \
-                   (completion_tokens / 1_000_000) * model_info.output_price
-        else:
-            cost = 0.0
+    def record(self, model: str, prompt_tokens: int, completion_tokens: int, input_price: float = 0.0, output_price: float = 0.0):
+        cost = (prompt_tokens / 1_000_000) * input_price + (completion_tokens / 1_000_000) * output_price
 
         log = RequestLog(
             timestamp=datetime.now().isoformat(),
