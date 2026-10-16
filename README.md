@@ -7,7 +7,7 @@
 - 文字题目：直接输入，AI 分步解答
 - 图片题目：拖入图片，用 `@文件名` 引用，AI 识别后解答
 - 公式渲染：每次回答自动生成 HTML 网页，MathJax 渲染 LaTeX 公式，浏览器打开即可查看
-- 多模型支持：17 个 AI 模型可选（含 3 个免费模型），支持运行时切换
+- 多模型支持：兼容任何 OpenAI 格式的 API，支持运行时切换模型
 - 用量追踪：记录 token 消耗和费用，预算预警
 - 多轮对话：自动维护上下文，支持连续追问
 
@@ -28,7 +28,7 @@ QSEVER_API_KEY=你的API密钥
 QSEVER_BASE_URL=你的API地址
 ```
 
-本项目使用 [Y-api](https://y-api.bestvirtualgoods.com) 中转站，也兼容任何 OpenAI 格式的 API。
+兼容任何 OpenAI 格式的 API 端点（如 OpenAI、Azure、本地部署等）。
 
 ### 使用
 
@@ -64,19 +64,15 @@ Qsever.exe
 | `/clear` | 清空对话历史 |
 | `/exit` | 退出 |
 
-## 可用模型
+## 模型配置
 
-| 模型 | 输入价 | 输出价 | 说明 |
-|------|--------|--------|------|
-| deepseek-v4-flash | 免费 | 免费 | 可能排队 |
-| minimax-m2.7 | 免费 | 免费 | 可能排队 |
-| tencent/hy3 | 免费 | 免费 | 可能排队 |
-| qwen/qwen3.8-flash | $0.20/M | $0.50/M | 默认，速度快 |
-| deepseek-v4-flash-0731 | $0.15/M | $0.30/M | 最便宜 |
-| openai/gpt-5.6-luna | $0.30/M | $1.30/M | |
-| anthropic/claude-opus-5 | $5.00/M | $25.00/M | 最强 |
+在 `.env` 中设置默认模型：
 
-完整模型列表运行 `/model` 查看。
+```env
+QSEVER_DEFAULT_MODEL=你的模型名称
+```
+
+程序兼容任何 OpenAI 格式的 API 端点。运行时可用 `/model` 命令查看和切换可用模型。
 
 ## 从源码运行
 
@@ -109,7 +105,7 @@ Qsever/
 │   ├── cli.py           # 命令行交互主循环
 │   ├── client.py        # API 客户端（流式调用 + 重试）
 │   ├── config.py        # 配置管理（.env 加载）
-│   ├── models.py        # 模型注册表（17 个模型）
+│   ├── models.py        # 模型注册表（可自定义）
 │   ├── conversation.py  # 多轮对话历史管理
 │   ├── image_handler.py # 图片处理（base64 编码）
 │   ├── html_exporter.py # HTML 导出（MathJax 渲染）

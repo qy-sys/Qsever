@@ -10,7 +10,7 @@
 - 文字题目解答，AI 分步解题（审题→解题→答案→提示）
 - 图片题目支持，拖入 `images/` 后用 `@文件名` 引用
 - HTML 公式导出，MathJax 渲染 LaTeX，自动浏览器打开
-- 17 个 AI 模型支持（3 免费 + 14 付费），运行时切换
+- 多模型支持，兼容 OpenAI 格式 API，运行时切换
 - 用量追踪，JSONL 持久化，80% 预算预警
 - PyInstaller 打包，单文件安装程序（桌面自动创建文件夹）
 - 免费模型自动重试（超时/限流最多 3 次）
@@ -36,7 +36,7 @@ Qsever/
 │   ├── cli.py           # CLI 主循环，指令解析，rich 美化输出
 │   ├── client.py        # OpenAI 兼容 API 客户端，流式 + 重试
 │   ├── config.py        # Settings dataclass，dotenv 加载，frozen 检测
-│   ├── models.py        # ModelRegistry，17 个模型元数据
+│   ├── models.py        # ModelRegistry，模型元数据（可自定义）
 │   ├── conversation.py  # 对话历史，token 截断，会话保存/加载
 │   ├── image_handler.py # 图片扫描，base64 编码，vision content 构造
 │   ├── html_exporter.py # HTML 模板，Markdown→HTML 转换，浏览器打开
@@ -50,7 +50,7 @@ Qsever/
 
 ### 技术细节
 
-- 默认模型：`qwen/qwen3.8-flash`（$0.20/$0.50 per 1M tokens）
+- 默认模型可在 `.env` 中配置（`QSEVER_DEFAULT_MODEL`）
 - 流式输出：Python generator yield，非多线程
 - 打包方案：PyInstaller onefile + Python 自释放安装器（base64 嵌入）
 - 安装程序大小：~40MB，主程序 ~33MB
