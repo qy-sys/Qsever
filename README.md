@@ -26,6 +26,8 @@
 ```env
 QSEVER_API_KEY=你的API密钥
 QSEVER_BASE_URL=你的API地址
+QSEVER_DEFAULT_MODEL=你的默认模型名称
+QSEVER_MODELS=模型1,模型2,模型3
 ```
 
 兼容任何 OpenAI 格式的 API 端点（如 OpenAI、Azure、本地部署等）。
@@ -55,8 +57,8 @@ Qsever.exe
 |------|------|
 | `/help` | 显示帮助 |
 | `/model [名称]` | 切换模型（无参数列出所有模型） |
-| `/fast` | 切换到最快模型 |
-| `/free` | 切换到免费模型 |
+| `/add-model <名称>` | 添加模型 |
+| `/remove-model <名称>` | 移除模型 |
 | `/images` | 列出可用图片 |
 | `/usage` | 查看用量和费用 |
 | `/html` | 手动导出最近一次问答为 HTML |
@@ -66,13 +68,26 @@ Qsever.exe
 
 ## 模型配置
 
-在 `.env` 中设置默认模型：
+在 `.env` 中配置模型列表，用逗号分隔：
 
 ```env
-QSEVER_DEFAULT_MODEL=你的模型名称
+QSEVER_MODELS=qwen/qwen3.8-flash,deepseek/deepseek-v4-flash,openai/gpt-4o
+QSEVER_DEFAULT_MODEL=qwen/qwen3.8-flash
 ```
 
-程序兼容任何 OpenAI 格式的 API 端点。运行时可用 `/model` 命令查看和切换可用模型。
+- `QSEVER_MODELS` — 可用模型列表，逗号分隔，第一个为默认模型
+- `QSEVER_DEFAULT_MODEL` — 默认模型（可选，不设则用 `QSEVER_MODELS` 中的第一个）
+
+运行时也可以管理模型：
+
+```bash
+> /model                    # 查看当前可用模型
+> /add-model openai/gpt-4o  # 添加新模型
+> /remove-model old-model   # 移除模型
+> /model openai/gpt-4o      # 切换到指定模型
+```
+
+程序兼容任何 OpenAI 格式的 API 端点，模型名称填写你的 API 服务商支持的模型 ID 即可。
 
 ## 从源码运行
 

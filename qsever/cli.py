@@ -3,9 +3,7 @@ from datetime import datetime
 from pathlib import Path
 
 from rich.console import Console
-from rich.markdown import Markdown
 from rich.panel import Panel
-from rich.table import Table
 from prompt_toolkit import PromptSession
 from prompt_toolkit.history import InMemoryHistory
 
@@ -15,7 +13,7 @@ from .conversation import Conversation
 from .exceptions import APIError, ImageNotFound, QseverError
 from .html_exporter import HTMLExporter
 from .image_handler import ImageHandler
-from .models import ModelInfo, ModelRegistry
+from .models import ModelRegistry
 from .prompts import SOLVER_SYSTEM_PROMPT
 from .usage import UsageTracker
 
@@ -25,12 +23,12 @@ console = Console()
 class CLI:
     COMMANDS = {
         "/help": "显示帮助",
-        "/model [name]": "切换模型（无参数则列出可用模型）",
+        "/model [名称]": "切换模型（无参数则列出可用模型）",
+        "/add-model <名称>": "添加模型",
+        "/remove-model <名称>": "移除模型",
         "/images": "列出 images/ 中的可用图片",
         "/usage": "显示当前用量和费用",
         "/clear": "清空对话历史",
-        "/fast": "切换到最快模型",
-        "/free": "切换到免费模型",
         "/html": "导出最近一次问答为 HTML（/html on/off 控制自动打开）",
         "/exit": "退出",
     }
@@ -50,7 +48,7 @@ class CLI:
 
     def run(self):
         console.print(Panel.fit(
-            "[bold cyan]Qsever - 高中解题助手 v0.1.0[/bold cyan]",
+            "[bold cyan]Qsever - 高中解题助手 v0.2.0[/bold cyan]",
             border_style="cyan",
         ))
         self._show_current_model()
@@ -81,16 +79,16 @@ class CLI:
             self._cmd_help()
         elif cmd == "/model":
             self._cmd_model(arg)
+        elif cmd == "/add-model":
+            self._cmd_add_model(arg)
+        elif cmd == "/remove-model":
+            self._cmd_remove_model(arg)
         elif cmd == "/images":
             self._cmd_images()
         elif cmd == "/usage":
             self._cmd_usage()
         elif cmd == "/clear":
             self._cmd_clear()
-        elif cmd == "/fast":
-            self._cmd_fast()
-        elif cmd == "/free":
-            self._cmd_free()
         elif cmd == "/html":
             self._cmd_html(arg)
         elif cmd == "/exit":
@@ -159,12 +157,7 @@ class CLI:
         return re.sub(r"@\S+\.(?:png|jpg|jpeg|webp|gif)\s*", "", text, flags=re.IGNORECASE).strip()
 
     def _show_current_model(self):
-        model_info = ModelRegistry.get(self.current_model)
-        if model_info:
-            status = "免费" if model_info.is_free else f"${model_info.input_price}/${model_info.output_price} per 1M tokens"
-            console.print(f"当前模型: [bold]{model_info.display_name}[/bold] ({status})")
-        else:
-            console.print(f"当前模型: [bold]{self.current_model}[/bold]")
+        console.print(f"当前模型: [bold]{self.current_model}[/bold]")
 
     def _cmd_help(self):
         console.print("\n[bold]可用命令:[/bold]")
@@ -189,34 +182,51 @@ class CLI:
         self._show_current_model()
 
     def _list_models(self):
+        models = ModelRegistry.list_all()
+        if not models:
+            console.print("[dim]暂无可用模型，使用 /add-model 添加[/dim]")
+            return
+
         console.print("\n[bold]可用模型:[/bold]\n")
+        for m in models:
+            current = " [green]← 当前[/green]" if m.id == self.current_model else ""
+            console.print(f"  [cyan]{m.id}[/cyan]{current}")
+        console.print(f"\n共 {len(models)} 个模型")
 
-        table = Table(show_header=True, header_style="bold cyan")
-        table.add_column("模型 ID", style="dim")
-        table.add_column("显示名称")
-        table.add_column("输入价", justify="right")
-        table.add_column("输出价", justify="right")
-        table.add_column("免费", justify="center")
-        table.add_column("速度", justify="center")
-        table.add_column("备注", style="yellow")
+    def _cmd_add_model(self, arg: str | None):
+        if not arg:
+            console.print("[red]用法: /add-model <模型名称>[/red]")
+            console.print("例: [green]/add-model deepseek/deepseek-v4-flash[/green]")
+            return
 
-        for m in ModelRegistry.list_all():
-            input_price = "免费" if m.is_free else f"${m.input_price}"
-            output_price = "免费" if m.is_free else f"${m.output_price}"
-            is_free = "是" if m.is_free else "否"
-            speed = "★" * (5 - m.speed_tier + 1)
-            current = " ←" if m.id == self.current_model else ""
-            table.add_row(
-                m.id + current,
-                m.display_name,
-                input_price,
-                output_price,
-                is_free,
-                speed,
-                m.notes,
-            )
+        model_id = arg.strip()
+        if ModelRegistry.get(model_id):
+            console.print(f"[yellow]模型 {model_id} 已存在[/yellow]")
+            return
 
-        console.print(table)
+        ModelRegistry.add(model_id)
+        console.print(f"[green]已添加模型: {model_id}[/green]")
+
+        if not self.current_model:
+            self.current_model = model_id
+            self._show_current_model()
+
+    def _cmd_remove_model(self, arg: str | None):
+        if not arg:
+            console.print("[red]用法: /remove-model <模型名称>[/red]")
+            console.print("输入 [bold]/model[/bold] 查看可用模型列表")
+            return
+
+        model_id = arg.strip()
+        if model_id == self.current_model:
+            console.print(f"[red]不能移除当前正在使用的模型: {model_id}[/red]")
+            console.print("请先用 [bold]/model[/bold] 切换到其他模型")
+            return
+
+        if ModelRegistry.remove(model_id):
+            console.print(f"[green]已移除模型: {model_id}[/green]")
+        else:
+            console.print(f"[red]未找到模型: {model_id}[/red]")
 
     def _cmd_images(self):
         images = self.image_handler.list_images()
@@ -242,20 +252,6 @@ class CLI:
     def _cmd_clear(self):
         self.conversation.clear()
         console.print("[green]对话历史已清空[/green]")
-
-    def _cmd_fast(self):
-        fastest = ModelRegistry.get_fastest()
-        self.current_model = fastest.id
-        console.print(f"[green]已切换到最快模型: {fastest.display_name}[/green]")
-        self._show_current_model()
-
-    def _cmd_free(self):
-        free = ModelRegistry.get_free()
-        self.current_model = free.id
-        console.print(f"[green]已切换到免费模型: {free.display_name}[/green]")
-        if free.notes:
-            console.print(f"[yellow]{free.notes}[/yellow]")
-        self._show_current_model()
 
     def _cmd_html(self, arg: str | None):
         if arg and arg.lower() == "on":

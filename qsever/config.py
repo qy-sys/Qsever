@@ -17,7 +17,8 @@ def get_base_dir() -> Path:
 class Settings:
     api_key: str
     base_url: str
-    default_model: str = "qwen/qwen3.8-flash"
+    default_model: str = ""
+    models: list[str] = field(default_factory=list)
     images_dir: Path = field(default_factory=lambda: Path("images"))
     data_dir: Path = field(default_factory=lambda: Path("data"))
     budget_limit: float = 100.0
@@ -41,6 +42,13 @@ class Settings:
         if not base_url:
             raise ConfigError("未设置 QSEVER_BASE_URL，请在 .env 文件中配置")
 
+        models_str = os.getenv("QSEVER_MODELS", "")
+        models = [m.strip() for m in models_str.split(",") if m.strip()] if models_str else []
+
+        default_model = os.getenv("QSEVER_DEFAULT_MODEL", "")
+        if not default_model and models:
+            default_model = models[0]
+
         if data_dir_override:
             images_dir = data_dir_override / "images"
             data_dir = data_dir_override / "data"
@@ -51,13 +59,13 @@ class Settings:
             output_dir = Path(os.getenv("QSEVER_OUTPUT_DIR", "output"))
 
         budget_limit = float(os.getenv("QSEVER_BUDGET_LIMIT", "100.0"))
-        default_model = os.getenv("QSEVER_DEFAULT_MODEL", "qwen/qwen3.8-flash")
         auto_open_html = os.getenv("QSEVER_AUTO_OPEN_HTML", "true").lower() == "true"
 
         return cls(
             api_key=api_key,
             base_url=base_url,
             default_model=default_model,
+            models=models,
             images_dir=images_dir,
             data_dir=data_dir,
             budget_limit=budget_limit,

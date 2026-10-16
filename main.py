@@ -11,8 +11,6 @@ from qsever.models import ModelRegistry
 def main():
     parser = argparse.ArgumentParser(description="Qsever - 高中解题助手")
     parser.add_argument("--model", type=str, help="指定模型 ID")
-    parser.add_argument("--fast", action="store_true", help="使用最快模型")
-    parser.add_argument("--free", action="store_true", help="使用免费模型")
     parser.add_argument("--clear", action="store_true", help="清空对话历史")
     parser.add_argument("--data-dir", type=str, help="数据目录路径（打包模式使用）")
     args = parser.parse_args()
@@ -23,19 +21,21 @@ def main():
         settings = Settings.from_env(data_dir_override=data_dir_override)
     except ConfigError as e:
         print(f"错误: {e}", file=sys.stderr)
+        print("\n请在 .env 文件中配置：")
+        print("  QSEVER_API_KEY=你的API密钥")
+        print("  QSEVER_BASE_URL=你的API地址")
+        print("  QSEVER_MODELS=模型1,模型2")
         sys.exit(1)
 
+    ModelRegistry.load_from_config(settings.models, settings.default_model)
+
     if args.model:
-        model_info = ModelRegistry.get(args.model)
-        if not model_info:
-            print(f"错误: 未知模型 {args.model}", file=sys.stderr)
-            print("可用模型:", ", ".join(m.id for m in ModelRegistry.list_all()))
-            sys.exit(1)
+        if not ModelRegistry.get(args.model):
+            ModelRegistry.add(args.model)
         settings.default_model = args.model
-    elif args.fast:
-        settings.default_model = ModelRegistry.get_fastest().id
-    elif args.free:
-        settings.default_model = ModelRegistry.get_free().id
+
+    if not settings.default_model and ModelRegistry.list_all():
+        settings.default_model = ModelRegistry.list_all()[0].id
 
     cli = CLI(settings)
 
