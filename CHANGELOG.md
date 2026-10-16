@@ -19,6 +19,7 @@
 ### 配置系统
 
 - `config.ini` INI 格式配置文件，`[main]` 节指定默认预设
+- `config.example.ini` 空模板，用户首次运行时引导添加配置
 - 每个预设包含 `api_key`、`base_url`、`model`（一个预设对应一个模型）
 - 模型价格格式：`模型 ID[:输入价 [:输出价]]`（每 1M tokens 美元）
 - `/config` 和 `/profile` 命令运行时查看和切换预设

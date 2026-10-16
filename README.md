@@ -22,32 +22,32 @@
 
 ### 配置
 
-编辑 `Qsever` 文件夹中的 `config.ini` 文件：
+首次运行会提示你编辑配置文件。打开 `Qsever` 文件夹中的 `config.ini`：
 
 ```ini
 [main]
-profile = yapi
+profile = 我的API
 
 [settings]
 images_dir = images
 data_dir = data
 budget_limit = 100.0
 auto_open_html = true
+output_dir = output
 
-[yapi]
-api_key = 你的 API 密钥
-base_url = 你的 API 地址（OpenAI 兼容格式）
-model = qwen/qwen3.8-flash:0.2:0.5
-
-[openai]
-api_key = sk-xxx
-base_url = https://api.openai.com/v1
-model = gpt-4o:2.5:10
+[我的API]
+api_key = 你的API密钥
+base_url = 你的API地址（OpenAI兼容格式）
+model = 模型名称:输入价格:输出价格
 ```
 
-- `[main]` 节的 `profile` 指定默认激活的预设
-- 每个预设包含：`api_key`、`base_url`、`model`
-- 模型价格格式：`模型 ID[:输入价 [:输出价]]`（每 1M tokens 美元），价格可选
+**配置说明：**
+- `[main]` 的 `profile` 指定默认激活的配置名
+- 每个配置节包含：`api_key`、`base_url`、`model`
+- 模型价格格式：`模型ID[:输入价[:输出价]]`（美元/百万tokens），价格可选
+  - 不填价格：`model = gpt-4o`
+  - 只填输入价：`model = gpt-4o:2.5`（输出价自动按 2.5 倍计算）
+  - 完整价格：`model = gpt-4o:2.5:10`
 
 兼容任何 OpenAI 格式的 API 端点（如 OpenAI、Azure、本地部署等）。
 
@@ -63,8 +63,8 @@ Qsever.exe
 # 图片题目（先把图片拖入 images/ 文件夹）
 > 解这道题 @math1.png
 
-# 切换预设
-> /config openai
+# 查看当前配置
+> /profile
 
 # 查看用量
 > /usage
