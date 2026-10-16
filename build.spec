@@ -36,7 +36,6 @@ a = Analysis(
         'pygments.lexers',
         'pygments.formatters',
         'markdown_it',
-        'dotenv',
     ],
     hookspath=[],
     hooksconfig={},
