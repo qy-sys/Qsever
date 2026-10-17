@@ -1,28 +1,35 @@
 # Qsever
 
-高中解题助手 — 命令行 AI 解题工具，支持文字和图片题目，自动生成带数学公式的网页解答。
+高中解题助手 — 支持 Web 网页界面和命令行两种模式，AI 智能解题，自动生成带数学公式的网页解答。
 
 ## 功能
 
-- 文字题目：直接输入，AI 分步解答
-- 图片题目：拖入图片，用 `@文件名` 引用，AI 识别后解答
-- 公式渲染：每次回答自动生成 HTML 网页，MathJax 渲染 LaTeX 公式，浏览器打开即可查看
-- 多预设支持：支持多组 API 配置，运行时切换
-- 用量追踪：记录 token 消耗和费用，预算预警
-- 多轮对话：自动维护上下文，支持连续追问
+- **Web 网页界面**：浏览器打开即可使用，无需命令行基础
+  - 流式输出，AI 回答逐字显示
+  - MathJax 渲染 LaTeX 数学公式
+  - Markdown 格式化，代码高亮
+  - 图片上传，直接上传题目图片
+  - 多标签页独立会话
+- **CLI 命令行模式**：传统命令行交互，适合习惯终端的用户
+- **文字题目**：直接输入，AI 分步解答（审题→解题→答案→提示）
+- **图片题目**：上传图片，AI 识别后解答
+- **公式渲染**：每次回答自动生成 HTML 网页，MathJax 渲染 LaTeX 公式
+- **多预设支持**：支持多组 API 配置，运行时切换
+- **用量追踪**：记录 token 消耗和费用，预算预警
+- **多轮对话**：自动维护上下文，支持连续追问
 
 ## 快速开始
 
 ### 安装
 
 1. 从 [Releases](https://github.com/qy-sys/Qsever/releases) 下载 `Qsever_Setup.exe`
-2. 双击运行，自动在桌面创建 `Qsever` 文件夹
+2. 双击运行，自动安装到安装程序所在目录
 3. 编辑 `config.ini` 填写你的 API 信息
-4. 双击 `Qsever.exe` 启动
+4. 双击 `start_web.bat` 启动 Web 界面，或 `start_cli.bat` 启动命令行模式
 
 ### 配置
 
-首次运行会提示你编辑配置文件。打开 `Qsever` 文件夹中的 `config.ini`：
+首次运行会提示你编辑配置文件。打开安装目录中的 `config.ini`：
 
 ```ini
 [main]
@@ -53,10 +60,20 @@ model = 模型名称:输入价格:输出价格
 
 ### 使用
 
-```bash
-# 启动程序
-Qsever.exe
+**Web 模式（推荐）：**
 
+双击 `start_web.bat`，自动打开浏览器访问 `http://127.0.0.1:8765`
+
+- 在输入框输入题目，按 Enter 发送
+- 点击图片按钮上传题目图片
+- 顶部下拉菜单切换 API 预设
+- 点击"用量"查看使用情况
+
+**CLI 模式：**
+
+双击 `start_cli.bat`，在命令行中交互：
+
+```bash
 # 输入题目
 > 求函数 f(x) = x² - 2x + 1 的最小值
 
@@ -70,7 +87,7 @@ Qsever.exe
 > /usage
 ```
 
-## 命令列表
+## 命令列表（CLI 模式）
 
 | 命令 | 说明 |
 |------|------|
@@ -93,7 +110,12 @@ cd Qsever
 pip install -r requirements.txt
 cp config.example.ini config.ini
 # 编辑 config.ini 填写你的 API 信息
+
+# 启动 Web 模式（默认）
 python main.py
+
+# 或启动 CLI 模式
+python main.py cli
 ```
 
 ## 打包
@@ -108,10 +130,10 @@ build_all.bat
 
 ```
 Qsever/
-├── main.py              # 程序入口
+├── main.py              # 程序入口，web/cli 双模式
 ├── requirements.txt     # Python 依赖
-── config.example.ini   # 配置模板
-── build.spec           # PyInstaller 打包配置
+├── config.example.ini   # 配置模板
+├── build.spec           # PyInstaller 打包配置
 ├── build_all.bat        # 一键打包脚本
 ├── installer.py         # 安装程序模板
 ├── make_installer.py    # 安装程序生成器
@@ -124,7 +146,14 @@ Qsever/
 │   ├── html_exporter.py # HTML 导出（MathJax 渲染）
 │   ├── usage.py         # 用量追踪和费用计算
 │   ├── prompts.py       # 解题系统提示词
-│   └── exceptions.py    # 自定义异常
+│   ├── exceptions.py    # 自定义异常
+│   └── web/             # Web 前端
+│       ├── server.py    # FastAPI 应用（SSE 流式）
+│       ├── session.py   # 会话管理
+│       └── static/      # 前端静态文件
+│           ├── index.html
+│           ├── css/style.css
+│           └── js/app.js
 ├── images/              # 题目图片目录
 ├── data/                # 运行时数据（用量记录）
 └── output/              # 生成的 HTML 解答网页
@@ -134,10 +163,13 @@ Qsever/
 
 - Python 3.10+
 - [openai](https://github.com/openai/openai-python) — API 调用
-- [rich](https://github.com/Textualize/rich) — 终端美化
+- [FastAPI](https://fastapi.tiangolo.com) — Web 后端框架
+- [uvicorn](https://www.uvicorn.org) — ASGI 服务器
+- [rich](https://github.com/Textualize/rich) — 终端美化（CLI 模式）
 - [prompt-toolkit](https://github.com/prompt-toolkit/python-prompt-toolkit) — 命令行输入增强
 - [PyInstaller](https://pyinstaller.org) — 打包为 exe
 - [MathJax](https://www.mathjax.org) — 数学公式渲染
+- [marked.js](https://marked.js.org) — Markdown 解析
 
 ## 作者
 
