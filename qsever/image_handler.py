@@ -49,6 +49,19 @@ class ImageHandler:
 
         return ImageData(data=data, mime_type=mime_type, filename=path.name)
 
+    def build_vision_content_from_data(self, text: str, image_data_list: list[ImageData]) -> list[dict]:
+        content = []
+        if text:
+            content.append({"type": "text", "text": text})
+        for img in image_data_list:
+            content.append({
+                "type": "image_url",
+                "image_url": {
+                    "url": f"data:{img.mime_type};base64,{img.data}"
+                }
+            })
+        return content
+
     def build_vision_content(self, text: str, image_files: list[str]) -> list[dict]:
         content = []
         if text:

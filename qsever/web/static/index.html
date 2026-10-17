@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Qsever - 高中解题助手</title>
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      },
+      options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'] }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked@12/marked.min.js"></script>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <div class="header-left">
+        <h1>Qsever</h1>
+        <span class="subtitle">高中解题助手</span>
+      </div>
+      <div class="header-right">
+        <select id="profile-select" class="profile-select"></select>
+        <button id="usage-btn" class="icon-btn" title="用量统计">📊</button>
+        <button id="clear-btn" class="icon-btn" title="清空对话">🗑️</button>
+      </div>
+    </header>
+
+    <main class="chat-area" id="chat-area">
+      <div class="welcome-message" id="welcome-message">
+        <h2>欢迎使用 Qsever</h2>
+        <p>输入你的题目，我会为你详细解答</p>
+        <p class="hint">支持数学公式（LaTeX 格式）、图片题目</p>
+      </div>
+    </main>
+
+    <footer class="input-area">
+      <div class="image-preview" id="image-preview"></div>
+      <div class="input-row">
+        <label class="upload-btn" title="上传图片">
+          📎
+          <input type="file" id="image-input" accept="image/*" multiple hidden>
+        </label>
+        <textarea id="message-input" placeholder="输入题目..." rows="1"></textarea>
+        <button id="send-btn" class="send-btn" title="发送">➤</button>
+      </div>
+    </footer>
+  </div>
+
+  <div class="modal" id="usage-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>用量统计</h3>
+        <button class="modal-close" id="usage-close">&times;</button>
+      </div>
+      <div class="modal-body" id="usage-body"></div>
+    </div>
+  </div>
+
+  <script src="/js/app.js"></script>
+</body>
+</html>

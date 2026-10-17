@@ -1,5 +1,69 @@
 # 更新日志
 
+## v0.2.0 — 2026-10-17
+
+### 新增
+
+- Web 前端界面：FastAPI + 纯 HTML/CSS/JS，浏览器打开即可使用
+- 流式输出：SSE 实时逐字显示 AI 回复
+- MathJax 公式渲染：LaTeX 公式在浏览器中美观显示
+- Markdown 渲染：AI 回复自动转换为格式化文本
+- 图片上传：网页端直接上传图片题目
+- 预设切换：网页端下拉菜单切换 API 预设
+- 用量统计：网页端弹窗查看用量和费用
+- 端口冲突自动解决：端口被占用时自动切换可用端口
+- CLI 和 Web 双入口：`python main.py` 启动 Web，`python main.py cli` 启动 CLI
+
+### 项目结构
+
+```
+Qsever/
+├── main.py              # 程序入口，web/cli 双模式
+├── requirements.txt     # 依赖：openai, rich, prompt-toolkit, Pillow, fastapi, uvicorn
+├── LICENSE              # MIT 许可证
+── README.md            # 项目说明
+├── CHANGELOG.md         # 本文件
+├── config.example.ini   # 配置模板
+├── build.spec           # PyInstaller 主程序打包配置
+├── build_all.bat        # 一键打包脚本
+├── installer.py         # 安装程序模板
+├── make_installer.py    # 安装程序生成器
+├── .gitignore
+├── qsever/              # 核心包
+│   ├── __init__.py      # 版本号 v0.2.0
+│   ├── cli.py           # CLI 主循环
+│   ├── client.py        # OpenAI 兼容 API 客户端
+│   ├── config.py        # INI 多预设配置
+│   ├── conversation.py  # 对话历史管理
+│   ├── image_handler.py # 图片处理
+│   ├── html_exporter.py # HTML 导出
+│   ├── usage.py         # 用量追踪
+│   ├── prompts.py       # 系统提示词
+│   ├── exceptions.py    # 异常定义
+│   └── web/             # Web 前端（新增）
+│       ├── __init__.py
+│       ├── server.py    # FastAPI 应用，SSE 流式
+│       ├── session.py   # 会话管理
+│       └── static/      # 前端静态文件
+│           ├── index.html
+│           ├── css/style.css
+│           └── js/app.js
+├── images/              # 图片目录
+├── data/                # 数据目录
+└── output/              # 输出目录
+```
+
+### 技术细节
+
+- Web 框架：FastAPI（异步）+ uvicorn（ASGI 服务器）
+- 前端：纯 HTML/CSS/JS，无构建工具，CDN 加载 MathJax 和 marked.js
+- 流式传输：SSE（Server-Sent Events），fetch + ReadableStream 解析
+- 同步兼容：`asyncio.run_in_executor()` 包装同步 API 客户端，核心模块零改动
+- 会话隔离：每个浏览器标签独立会话，UUID 标识
+- 安装程序：安装到安装程序所在目录，不再固定桌面
+
+---
+
 ## v0.1.0 — 2026-10-17
 
 初始版本。
