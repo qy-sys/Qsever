@@ -66,6 +66,8 @@ class UsageTracker:
         }
 
     def check_budget_warning(self) -> str | None:
+        if self.budget_limit < 0:
+            return None
         summary = self.session_summary()
         usage_ratio = summary["total_cost"] / self.budget_limit if self.budget_limit > 0 else 0
         if usage_ratio >= 0.8:
