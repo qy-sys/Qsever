@@ -107,7 +107,8 @@ def create_app(settings: Settings) -> FastAPI:
                 if full_response:
                     session.conversation.add_assistant("".join(full_response))
             except APIError as e:
-                session.conversation.messages.pop()
+                if session.conversation.messages:
+                    session.conversation.messages.pop()
                 yield f"event: error\ndata: {json.dumps({'message': str(e)}, ensure_ascii=False)}\n\n"
 
         return StreamingResponse(event_generator(), media_type="text/event-stream")
@@ -170,6 +171,20 @@ def create_app(settings: Settings) -> FastAPI:
         content = await file.read()
         dest.write_bytes(content)
         return {"ok": True, "filename": file.filename}
+
+    @app.get("/api/images/file/{filename}")
+    async def get_image(filename: str):
+        from fastapi.responses import FileResponse
+        import mimetypes
+
+        # 遍历所有会话的 images_dir 查找文件
+        for session in session_mgr.sessions.values():
+            path = session.settings.images_dir / filename
+            if path.exists():
+                mime_type, _ = mimetypes.guess_type(str(path))
+                return FileResponse(path, media_type=mime_type or "image/png")
+
+        raise HTTPException(404, f"图片不存在：{filename}")
 
     static_dir = Path(__file__).parent / "static"
     app.mount("/", StaticFiles(directory=str(static_dir), html=True), name="static")
