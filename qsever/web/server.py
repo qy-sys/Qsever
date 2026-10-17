@@ -178,7 +178,7 @@ def create_app(settings: Settings) -> FastAPI:
         import mimetypes
 
         # 遍历所有会话的 images_dir 查找文件
-        for session in session_mgr.sessions.values():
+        for session in session_mgr._sessions.values():
             path = session.settings.images_dir / filename
             if path.exists():
                 mime_type, _ = mimetypes.guess_type(str(path))
