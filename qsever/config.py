@@ -161,3 +161,70 @@ class Settings:
             return False
         self.active_profile = name
         return True
+
+    def save_config(self, config_file: str = "config.ini"):
+        base_dir = get_base_dir()
+        config_path = base_dir / config_file
+        
+        cp = configparser.ConfigParser()
+        
+        cp['main'] = {'profile': self.active_profile}
+        
+        cp['settings'] = {
+            'images_dir': str(self.images_dir),
+            'data_dir': str(self.data_dir),
+            'output_dir': str(self.output_dir),
+            'budget_limit': str(self.budget_limit),
+            'auto_open_html': str(self.auto_open_html),
+        }
+        
+        for name, profile in self.profiles.items():
+            cp[name] = {
+                'api_key': profile.api_key,
+                'base_url': profile.base_url,
+                'model': self._format_model(profile),
+            }
+        
+        with open(config_path, 'w', encoding='utf-8') as f:
+            f.write("# Qsever 配置文件\n\n")
+            cp.write(f)
+
+    @staticmethod
+    def _format_model(profile: ConfigProfile) -> str:
+        if profile.input_price > 0 or profile.output_price > 0:
+            return f"{profile.model_id}:{profile.input_price}:{profile.output_price}"
+        return profile.model_id
+
+    def add_profile(self, profile: ConfigProfile) -> bool:
+        if profile.name in self.profiles:
+            return False
+        self.profiles[profile.name] = profile
+        return True
+
+    def update_profile(self, name: str, updates: dict) -> bool:
+        if name not in self.profiles:
+            return False
+        profile = self.profiles[name]
+        for key, value in updates.items():
+            if hasattr(profile, key) and key != 'name':
+                setattr(profile, key, value)
+        return True
+
+    def delete_profile(self, name: str) -> bool:
+        if name not in self.profiles:
+            return False
+        if len(self.profiles) <= 1:
+            return False
+        del self.profiles[name]
+        if self.active_profile == name:
+            self.active_profile = next(iter(self.profiles))
+        return True
+
+    def update_settings(self, updates: dict):
+        for key, value in updates.items():
+            if key == 'budget_limit':
+                self.budget_limit = float(value)
+            elif key == 'auto_open_html':
+                self.auto_open_html = bool(value)
+            elif key in ('images_dir', 'data_dir', 'output_dir'):
+                setattr(self, key, Path(value))

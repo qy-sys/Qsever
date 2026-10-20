@@ -26,6 +26,7 @@
       </div>
       <div class="header-right">
         <select id="profile-select" class="profile-select"></select>
+        <button id="settings-btn" class="icon-btn" title="设置">⚙️</button>
         <button id="usage-btn" class="icon-btn" title="用量统计">📊</button>
         <button id="clear-btn" class="icon-btn" title="清空对话">🗑️</button>
       </div>
@@ -46,6 +47,7 @@
           📎
           <input type="file" id="image-input" accept="image/*" multiple hidden>
         </label>
+        <button id="gallery-btn" class="upload-btn" title="图片库">🖼️</button>
         <textarea id="message-input" placeholder="输入题目..." rows="1"></textarea>
         <button id="send-btn" class="send-btn" title="发送">➤</button>
       </div>
@@ -59,6 +61,98 @@
         <button class="modal-close" id="usage-close">&times;</button>
       </div>
       <div class="modal-body" id="usage-body"></div>
+    </div>
+  </div>
+
+  <div class="modal" id="settings-modal">
+    <div class="modal-content modal-large">
+      <div class="modal-header">
+        <h3>设置</h3>
+        <button class="modal-close" id="settings-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="settings-tabs">
+          <button class="tab-btn active" data-tab="profiles">预设管理</button>
+          <button class="tab-btn" data-tab="general">通用设置</button>
+        </div>
+        
+        <div class="tab-content active" id="tab-profiles">
+          <div id="profile-list"></div>
+          <button id="add-profile-btn" class="btn-primary">+ 添加预设</button>
+        </div>
+        
+        <div class="tab-content" id="tab-general">
+          <div class="form-group">
+            <label>预算上限（美元，-1 为不限）</label>
+            <input type="number" id="setting-budget" step="0.01">
+          </div>
+          <div class="form-group">
+            <label>
+              <input type="checkbox" id="setting-auto-open"> 
+              导出 HTML 后自动在浏览器打开
+            </label>
+          </div>
+          <button id="save-settings-btn" class="btn-primary">保存设置</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="profile-form-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="profile-form-title">添加预设</h3>
+        <button class="modal-close" id="profile-form-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="pf-original-name">
+        <div class="form-group">
+          <label>预设名称</label>
+          <input type="text" id="pf-name" placeholder="例：我的GPT">
+        </div>
+        <div class="form-group">
+          <label>API Key</label>
+          <input type="password" id="pf-api-key" placeholder="sk-...">
+        </div>
+        <div class="form-group">
+          <label>Base URL</label>
+          <input type="text" id="pf-base-url" placeholder="https://api.openai.com/v1">
+        </div>
+        <div class="form-group">
+          <label>模型 ID</label>
+          <input type="text" id="pf-model" placeholder="gpt-4o">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>输入价格</label>
+            <input type="number" id="pf-input-price" step="0.01" placeholder="0">
+          </div>
+          <div class="form-group">
+            <label>输出价格</label>
+            <input type="number" id="pf-output-price" step="0.01" placeholder="0">
+          </div>
+        </div>
+        <div class="form-actions">
+          <button id="pf-save" class="btn-primary">保存</button>
+          <button id="pf-cancel" class="btn-secondary">取消</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="gallery-modal">
+    <div class="modal-content modal-large">
+      <div class="modal-header">
+        <h3>图片库</h3>
+        <button class="modal-close" id="gallery-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div id="gallery-grid" class="gallery-grid"></div>
+        <div id="gallery-empty" class="gallery-empty" style="display:none;">
+          <p>图片库为空</p>
+          <p class="hint">通过上方 📎 按钮上传图片</p>
+        </div>
+      </div>
     </div>
   </div>
 

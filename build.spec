@@ -56,6 +56,8 @@ a = Analysis(
         'pygments.lexers',
         'pygments.formatters',
         'markdown_it',
+        'PIL',
+        'PIL.Image',
     ],
     hookspath=[],
     hooksconfig={},

@@ -68,7 +68,7 @@ class CLI:
         profile_names = ", ".join(self.settings.profiles.keys())
         current_model = self.settings.current_model
         lines = [
-            "[bold cyan]Qsever v0.2.0 — 高中解题助手[/bold cyan]",
+            "[bold cyan]Qsever v0.2.1 — 高中解题助手[/bold cyan]",
             "[dim]by 野山菌 | MIT License[/dim]",
             "[dim]GitHub: github.com/qy-sys/Qsever[/dim]",
             "[dim]B 站：space.bilibili.com/1048757404[/dim]",
@@ -278,7 +278,7 @@ class CLI:
                 console.print(f"[green]已生成 HTML：{filepath.name}[/green]")
 
     def _cmd_about(self):
-        console.print("\n[bold]Qsever v0.2.0 — 高中解题助手[/bold]\n")
+        console.print("\n[bold]Qsever v0.2.1 — 高中解题助手[/bold]\n")
         console.print("  作者：野山菌")
         console.print("  GitHub：github.com/qy-sys/Qsever")
         console.print("  B 站：space.bilibili.com/1048757404")
