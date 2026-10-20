@@ -308,19 +308,13 @@ def start_server(settings: Settings, host: str = "127.0.0.1", port: int = 8765):
     import uvicorn
     import webbrowser
     import threading
-    import sys
-    import io
-    
-    if sys.platform == 'win32':
-        sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
-        sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
     
     app = create_app(settings)
     actual_port = _find_available_port(host, port)
     if actual_port != port:
-        print(f"\n  端口 {port} 被占用，自动切换到 {actual_port}")
-    print(f"\n  Qsever Web 启动中...")
-    print(f"  打开浏览器访问: http://{host}:{actual_port}\n")
+        print(f"\n  Port {port} occupied, switching to {actual_port}")
+    print(f"\n  Qsever Web starting...")
+    print(f"  Open browser: http://{host}:{actual_port}\n")
     
     def open_browser():
         import time
@@ -328,4 +322,4 @@ def start_server(settings: Settings, host: str = "127.0.0.1", port: int = 8765):
         webbrowser.open(f"http://{host}:{actual_port}")
     
     threading.Thread(target=open_browser, daemon=True).start()
-    uvicorn.run(app, host=host, port=actual_port, log_level="info")
+    uvicorn.run(app, host=host, port=actual_port, log_level="error")
